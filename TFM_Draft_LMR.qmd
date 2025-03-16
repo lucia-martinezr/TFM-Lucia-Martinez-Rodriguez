@@ -1,0 +1,92 @@
+---
+title: "Draft_TFM_Lucia_Martinez_Rodriguez"
+author: "Lucía Martínez Rodríguez"
+format: html
+editor: visual
+---
+
+## Packages installation
+
+```{r}
+library(dplyr)
+```
+
+## RNASeq BC's Data download from CPTAC
+
+```{r}
+
+# set wd en un chunk inicial (y puede que el resto)?
+
+# que no se ejecute este chunk. eval =FALSE
+
+BiocManager::install("TCGAbiolinks")
+library(TCGAbiolinks)
+
+query <- GDCquery(project = 'CPTAC-2',
+                  data.category = "Transcriptome Profiling",
+                  data.type = "Gene Expression Quantification",
+                  experimental.strategy = "RNA-Seq",
+                  workflow.type = "STAR - Counts"
+                  )
+
+GDCdownload(query, method = "api") # Descarga de los datos por API
+
+
+data <- GDCprepare(query) # Convierte los datos descargados en un formato listo para análisis, compatible con R
+
+# saveRDS(data, file = "ruta/nombre.rds") 
+
+# Este paso me da error. 
+
+mrna = assay(data) #`assay(data)` devuelve una matriz donde las filas corresponden a genes y las columnas a muestras.
+
+meta = colData(data)
+
+data.conteos <- as.data.frame(t(mrna)) # Transponen la matriz para que queden muestras en filas y genes en columnas.
+
+#
+
+```
+
+### Downloading clinical data
+
+```{r}
+clinical <- GDCquery_clinic(
+   project = "CPTAC-2",
+   type = "clinical",
+   save.csv = FALSE
+ )
+
+# br_cases <- clinical$primary_site[grep("Breast", clinical$primary_site)]
+# br_cases
+```
+
+### PAM50 call
+
+```{r}
+library(signifinder)
+library(genefu)
+library(AIMS)
+```
+
+## RNASeq BC's Data download from TCGA
+
+```{r}
+pacman::p_load(TCGAbiolinks)
+
+query <- GDCquery(project = 'TCGA-BRCA',
+                  data.category = "Transcriptome Profiling",
+                  data.type = "Gene Expression Quantification",
+                  experimental.strategy = "RNA-Seq",
+                  workflow.type = "STAR - Counts")
+
+GDCdownload(query, method = "api") # Descarga de los datos por API
+
+data <- GDCprepare(query) # Convierte los datos descargados en un formato listo para análisis, compatible con R
+
+mrna = assay(data) #`assay(data)` devuelve una matriz donde las filas corresponden a genes y las columnas a muestras.
+
+meta = colData(data)
+
+data.conteos <- as.data.frame(t(mrna)) # Transponen la matriz para que queden muestras en filas y genes en columnas.
+```
