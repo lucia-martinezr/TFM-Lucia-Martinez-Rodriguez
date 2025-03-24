@@ -5,67 +5,88 @@ format: html
 editor: visual
 ---
 
-## Packages installation
+```{r}
+path <- 'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez'
+setwd(path)
+```
+
+## Insalación de paquetes
+
+Nota: cuando tenga acabado el script pasaré todas las instalaciones aquí. Por ahora, prefiero tenerlo en los chunk que necesitan de cada paquete.
 
 ```{r}
 library(dplyr)
 ```
 
-## RNASeq BC's Data download from CPTAC
+## Carga y preprocesado de datos 
 
 ```{r}
+data_raw <- read.csv('data.tsv', sep = "\t", header = TRUE)
+clinical <- read.csv('clinical.tsv', sep = "\t", header = TRUE)
 
-# set wd en un chunk inicial (y puede que el resto)?
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
+pacman::p_load(biomaRt)
 
-# que no se ejecute este chunk. eval =FALSE
+# Conectar con Ensembl usando biomaRt
+ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl") # Human genes (GRCh38.p14) 
 
-BiocManager::install("TCGAbiolinks")
-library(TCGAbiolinks)
+# Obtener el diccionario
 
-query <- GDCquery(project = 'CPTAC-2',
-                  data.category = "Transcriptome Profiling",
-                  data.type = "Gene Expression Quantification",
-                  experimental.strategy = "RNA-Seq",
-                  workflow.type = "STAR - Counts"
-                  )
+# gene_data <- getBM(attributes = c("ensembl_gene_id", "external_gene_name", "entrezgene_id", "gene_biotype"),
+#                    filters = "ensembl_gene_id",
+#                    values = gene_ids,
+#                    mart = ensembl)
 
-GDCdownload(query, method = "api") # Descarga de los datos por API
+gene_dic <- getBM(attributes = c("ensembl_gene_id", "external_gene_name", "entrezgene_id", "gene_biotype"),
+                   mart = ensembl)
 
+print(head(gene_dic))
 
-data <- GDCprepare(query) # Convierte los datos descargados en un formato listo para análisis, compatible con R
+# Eliminar el paquete biomaRt al terminar
+detach("package:biomaRt", unload = TRUE)
 
-# saveRDS(data, file = "ruta/nombre.rds") 
+# Revisar cuántos protein-coding tengo en el diccionario
+table(gene_dic$gene_biotype,useNA = "ifany") # 24057
 
-# Este paso me da error. 
+# Extraer los identificadores de genes de la primera fila en data
+gene_ids <- as.character(data_raw[1,-1])
+print(head(gene_ids))
+anyNA(gene_ids)
 
-mrna = assay(data) #`assay(data)` devuelve una matriz donde las filas corresponden a genes y las columnas a muestras.
+# Eliminar el sufijo en los gene_ids
+gene_ids <- sub("\\..*$", "", gene_ids)
 
-meta = colData(data)
+# Quedarme solo con los genes protein coding en el diccionario
+gene_dic_PC <- gene_dic %>%
+  filter(gene_biotype == "protein_coding")
+gene_ens_pc <- gene_dic_PC$ensembl_gene_id
 
-data.conteos <- as.data.frame(t(mrna)) # Transponen la matriz para que queden muestras en filas y genes en columnas.
+# Filtrar los nombres que están en 'gene_ids_pc'
+filtered_names <- gene_ids[gene_ids %in% gene_ens_pc] # tengo 19897 protein coding de 60591 genes en data.
 
-#
+# Armar el df de forma más clara y quedándome sólo con los protein coding
+rownames(data_raw)<-data_raw[,1]
+data<-data_raw[-2,-1]
+colnames(data) <- data[1, ]
+data <- data[-1, ]
+colnames(data)<-sub("\\..*$", "", colnames(data))
+
+data_pc<- data [,colnames(data)%in%filtered_names] 
+head(data_pc)
 
 ```
 
-### Downloading clinical data
+Conclusión: obtengo 133 muestras con 19897 genes codificantes de proteínas.
 
-```{r}
-clinical <- GDCquery_clinic(
-   project = "CPTAC-2",
-   type = "clinical",
-   save.csv = FALSE
- )
-
-# br_cases <- clinical$primary_site[grep("Breast", clinical$primary_site)]
-# br_cases
-```
+# Por hacer:
 
 ### PAM50 call
 
 ```{r}
 library(signifinder)
-library(genefu)
+# library(genefu)
 library(AIMS)
 ```
 
