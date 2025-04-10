@@ -21,6 +21,7 @@ library(dplyr)
 ## Carga y preprocesado de datos CPTAC
 
 ### Versión más chapucera
+
 ```{r}
 data_raw <- read.csv('data.tsv', sep = "\t", header = TRUE)
 clinical <- read.csv('clinical.tsv', sep = "\t", header = TRUE)
@@ -94,6 +95,7 @@ head(data_pc)
 Conclusión: obtengo 133 muestras con 19897 genes codificantes de proteínas.
 
 ### Versión más limpia (creo)
+
 ```{r}
 data_raw <- read.csv('data.tsv', sep = "\t", header = TRUE)
 clinical <- read.csv('clinical.tsv', sep = "\t", header = TRUE)
@@ -138,6 +140,7 @@ filtered_names <- gene_ids[gene_ids %in% gene_ens_pc] # tengo 19897 protein codi
 
 # Armar el df de forma más clara y quedándome sólo con los protein coding
 data_pc <- data_raw[-c(1,2),-1]
+rownames(data_pc)<-data_raw[-c(1,2),1]
 filtered_names<- gene_dic_PC$external_gene_name
 data_pc <- data_pc[, colnames(data_pc) %in% gene_dic_PC$external_gene_name] # en este caso me quedo con 18757 genes!!!! No con 19897 como en el primer ejemplo
 
@@ -175,7 +178,13 @@ rm(temp_data_pc)
 
 ```
 
+De este apartado he sacado el dataframe data_pc, que tiene los niveles de expresión de los genes codificantes de proteínas del dataset de cáncer de mama.
 
+## Datos clínicos
+
+```{r}
+
+```
 
 ## Carga y preprocesado de datos TCGA
 
@@ -201,9 +210,6 @@ meta = colData(data)
 
 data.conteos <- as.data.frame(t(mrna)) # Transponen la matriz para que queden muestras en filas y genes en columnas.
 ```
-
-
-
 
 # Por hacer:
 
