@@ -10,11 +10,11 @@ library(org.Hs.eg.db)
 library(AnnotationDbi)
 
 # Inputpaths
-metadata_inputpath <- "data/data_partitions/metadata_train.rds"
-counts_inputpath <- "data/data_partitions/counts_train.rds"
+metadata_inputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/data_partitions/metadata_train.rds"
+counts_inputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/data_partitions/counts_train.rds"
 
 # Outputpaths
-outputpath <- "data/tnbc_signature/tnbc_annot.rds"
+outputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/tnbc_signature"
 
 # Arguments
 min_su <- 0.0025
@@ -23,13 +23,35 @@ min_su <- 0.0025
 counts_train <- readRDS(counts_inputpath)
 metadata_train <- readRDS(metadata_inputpath)
 
-# Run FCBF  # NO ME ENCUENTRA ESTA FUNCIÓN
-data_fcbf <- fast.cor.FS(
-    x = counts_train,
-    y = metadata_train$vital_status,
-    min_su = min_su
+# Discretize data
+discretized_data <- discretize_exprs(
+  expression_table = counts_train,
+  number_of_bins = 3,
+  method = "varying_width",
+  alpha = 1,
+  centers = 3,
+  min_max_cutoff = 0.25,
+  progress_bar = TRUE
 )
 
+# Set target vector 
+target_vector <- metadata_train$OS_event
+
+# Run FCBF 
+selected_features <- fcbf(
+  feature_table = discretized_data,
+  target_vector = target_vector,
+  minimum_su = 0.0025,
+  n_genes_selected_in_first_step = NULL,
+  verbose = FALSE,
+  samples_in_rows = TRUE, 
+  balance_classes = FALSE
+)
+
+# Con minimum_su 0.25 no encuentra nada.
+# Con 0.0025, que es el threshold que pone Jose, me encuentra 20 características.
+
+# A partir de aquí sin adaptar!!!
 # Map Ensembl IDs to gene symbols using org.Hs.eg.db
 yaccs <- AnnotationDbi::select(
   org.Hs.eg.db,
