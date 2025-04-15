@@ -14,7 +14,7 @@ metadata_inputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Marti
 counts_inputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/data_partitions/counts_train.rds"
 
 # Outputpaths
-outputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/tnbc_signature"
+outputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/tnbc_signature/signature_annot.rds"
 
 # Arguments
 min_su <- 0.0025
@@ -22,6 +22,9 @@ min_su <- 0.0025
 # Load data
 counts_train <- readRDS(counts_inputpath)
 metadata_train <- readRDS(metadata_inputpath)
+
+# Save gene names
+gene_names <- colnames(counts_train)
 
 # Discretize data
 discretized_data <- discretize_exprs(
@@ -51,18 +54,22 @@ selected_features <- fcbf(
 # Con minimum_su 0.25 no encuentra nada.
 # Con 0.0025, que es el threshold que pone Jose, me encuentra 20 características.
 
-# A partir de aquí sin adaptar!!!
+# Retrieve Ensembl IDs
+rn<-gene_names[selected_features$index]
+rownames(selected_features)<-rn 
+#Nota: ASUMO que los índices coinciden con el orden original de los IDs
+
+# Erase Ensembl transcript information
+rownames(selected_features) <- sub("\\..*", "", rownames(selected_features)) 
+
 # Map Ensembl IDs to gene symbols using org.Hs.eg.db
-yaccs <- AnnotationDbi::select(
+signature <- AnnotationDbi::select(
   org.Hs.eg.db,
-  keys = names(data_fcbf),
+  keys = rownames(selected_features), #Nota: mis genes estaban en rows, por eso no se puede usar names()
   columns = c("ENSEMBL", "SYMBOL"),
   keytype = "ENSEMBL",
   multiVals = "first"
 )
 
-yaccs <- yaccs[-which(yaccs$SYMBOL == "LGALS7B"), ]
-rownames(yaccs) <- 1:nrow(yaccs)
-
 # Store signature
-saveRDS(yaccs, file = file.path(outputpath))
+saveRDS(signature, file = file.path(outputpath))
