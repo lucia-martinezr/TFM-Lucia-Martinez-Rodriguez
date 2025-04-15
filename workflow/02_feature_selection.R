@@ -2,9 +2,9 @@
 # source("R/utils.R") Dónde está este archivo.
 # source("requirements.R")
 
-devtools::install_github("lubianat/FCBF")
-BiocManager::install("AnnotationDbi")
-BiocManager::install("org.Hs.eg.db")
+# devtools::install_github("lubianat/FCBF")
+# BiocManager::install("AnnotationDbi")
+# BiocManager::install("org.Hs.eg.db")
 library(FCBF)
 library(org.Hs.eg.db)
 library(AnnotationDbi)
