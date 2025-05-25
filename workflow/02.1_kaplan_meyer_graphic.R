@@ -1,8 +1,8 @@
 
-install.packages("ggsurvfit")
+# install.packages("ggsurvfit")
 library(ggsurvfit)
 
-devtools::install_github("zabore/condsurv")
+# devtools::install_github("zabore/condsurv")
 library(condsurv)
 
 library(ggplot2)
@@ -33,7 +33,7 @@ ggsave(filename = output_path, plot = gg, width = 8, height = 6, dpi = 300)
 
 
 # Creating two groups based on OS_event (1 or 0)
-km_groups <- as.data.frame(c(metadata_train$OS_event, ))
+km_groups <- as.data.frame(metadata_train$OS_event, )
 
 
 # Overall survival probability plot BY RISK GROUP
@@ -49,3 +49,5 @@ gg <- survfit2(Surv(OS_days, OS_event) ~ metadata_train$OS_event, data = metadat
 
 output_path <- file.path(outputpath, "kmplot_grouped.png")
 ggsave(filename = output_path, plot = gg, width = 8, height = 6, dpi = 300)
+
+print(gg)

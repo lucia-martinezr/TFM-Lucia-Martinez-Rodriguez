@@ -1,8 +1,5 @@
 # source("requirements.R") # Carga y ejecuta el script requirements.R
 
-# Falta el preprocesado y los archivos para empezar.
-
-
 # Inputpaths
 metadata_inputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.rds" #Pregunta: metadata es datos clínicos?
 counts_inputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/scanb_tnbc.rds"
