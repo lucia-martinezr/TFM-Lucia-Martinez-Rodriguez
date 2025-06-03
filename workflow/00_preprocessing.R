@@ -63,6 +63,63 @@ filtered_scanb_tnbc <- filtered_scanb_tnbc %>%
 kk <- filtered_scanb_tnbc[, sapply(filtered_scanb_tnbc, function(column) length(unique(column)) > 1)]
 dim(kk)==dim(filtered_scanb_tnbc) # No hay columnas constantes
 
+# Filtrado de datos: eliminación de genes NO protein coding.
+
+  # Cargo el diccionario
+annotations_path <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/dictionary/ensembl_hsapiens_gene_annotations.rds"
+gene_annotations <- readRDS(annotations_path)
+
+  # Guardo los IDs de genes en el df de expresion
+original_scanb_colnames_with_version <- colnames(filtered_scanb_tnbc) # con versión
+scanb_gene_ids_no_version <- sub("\\..*$", "", original_scanb_colnames_with_version) # sin versión (sin sufijo)
+
+  # Obtengo los Ids de Ensembl (sin versión) de los genes protein coding
+protein_coding_gene_ids_from_dict <- gene_annotations %>%
+  dplyr::filter(gene_biotype == "protein_coding") %>%
+  dplyr::pull(ensembl_gene_id) %>% # Extrae solo la columna ensembl_gene_id
+  unique() # Asegurar que sean únicos, aunque biomaRt suele darlos únicos
+
+cat("Número de IDs 'protein_coding' únicos en el diccionario:", 
+length(protein_coding_gene_ids_from_dict), "\n")
+
+  # Identifico qué genes del df de expresión están en la lista de protein coding del diccionario
+scanb_ids_that_are_protein_coding_no_version <- intersect(scanb_gene_ids_no_version, protein_coding_gene_ids_from_dict)
+
+  # Guardo los IDs de los genes "protein_coding" según el diccionario
+protein_coding_gene_ids <- protein_coding_genes$ensembl_gene_id
+cat("Número de tus genes (sin versión) que son 'protein_coding' y están en el diccionario:", 
+    length(scanb_ids_that_are_protein_coding_no_version), "\n")
+
+  # Mapeo los genes protein coding en el df de expresión
+final_columns_to_keep_with_version <- original_scanb_colnames_with_version[scanb_gene_ids_no_version %in% scanb_ids_that_are_protein_coding_no_version]
+
+cat("Número de columnas finales a mantener (con versión):", length(final_columns_to_keep_with_version), "\n")
+
+  # ¿Cuántos genes no son protein coding o no tienen equivalencia en el diccionario?
+ids_not_kept_no_version <- setdiff(scanb_gene_ids_no_version, scanb_ids_that_are_protein_coding_no_version)
+cat("Número de tus genes (sin versión) que NO se mantendrán (no son protein_coding o no están en el dict como tal):", 
+    length(ids_not_kept_no_version), "\n")
+
+  # Cálculo de cuántos genes se eliminan
+num_genes_initial <- ncol(filtered_scanb_tnbc)
+num_genes_final <- length(final_columns_to_keep_with_version)
+num_genes_removed <- num_genes_initial - num_genes_final
+
+cat("Número total de columnas de genes iniciales:", num_genes_initial, "\n")
+cat("Número total de columnas de genes 'protein_coding' a mantener:", num_genes_final, "\n")
+cat("Número total de columnas de genes eliminadas:", num_genes_removed, "\n")
+
+ # Filtrar el dataset para conservar solo los protein coding
+if (length(final_columns_to_keep_with_version) > 0) {
+  filtered_scanb_tnbc_protein_coding <- filtered_scanb_tnbc %>%
+    dplyr::select(all_of(final_columns_to_keep_with_version))
+} else {
+  cat("Advertencia: No se encontraron genes 'protein_coding' para mantener. El dataframe resultante estará vacío de genes.\n")
+  # Crear un dataframe con las mismas filas pero sin columnas de genes, o manejar como error
+  filtered_scanb_tnbc_protein_coding <- filtered_scanb_tnbc[, FALSE] # 0 columnas
+}
+filtered_scanb_tnbc <- filtered_scanb_tnbc_protein_coding
+
 # Intersección de los genes con los conjuntos de datos de validación externa.
 
 
@@ -71,8 +128,20 @@ dim(kk)==dim(filtered_scanb_tnbc) # No hay columnas constantes
 
 # Guardar los datos.
 saveRDS(filtered_scanb_tnbc, 'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/scanb_tnbc.rds')
-
 saveRDS(filtered_clin_tnbc, 'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.rds')
+
+write.table(filtered_scanb_tnbc, 
+            'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/scanb_tnbc.tsv', 
+            sep = '\t',      
+            row.names = TRUE,
+            col.names = NA)
+
+write.table(filtered_clin_tnbc, 
+            'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.tsv', 
+            sep = '\t',      
+            row.names = TRUE,
+            col.names = NA)
+
 
 # Prueba de normalidad para 5 genes al azar
 

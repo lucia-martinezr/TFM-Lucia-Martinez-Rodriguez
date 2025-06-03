@@ -1,0 +1,10 @@
+# Ignorar datos crudos grandes
+data/ext_data/scanb_tnbc.tsv
+
+# Ignorar otros archivos o carpetas si es necesario
+# مثلا:
+# *.log
+# temp_files/
+# .DS_Store
+# __pycache__/
+# *. Rhistory
