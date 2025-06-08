@@ -12,6 +12,9 @@ outputdir <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodri
 metadata <- readRDS(metadata_inputpath)
 counts <- readRDS(counts_inputpath)
 
+# Log transformation
+counts <- log2(counts + 1)
+
 # Make names. Esto garantiza que los nombres de las columnas de metadata no contengan caracteres que puedan causar problemas al trabajar con ellos en R. Los hace únicos añadiendo sufijos en caso necesario.
 names(metadata) <- make.names(names(metadata))
 
@@ -24,8 +27,8 @@ trainIdx <- sample(seq_len(nrow(metadata)), size = smpSize)
 metadata_train <- metadata[trainIdx, ]
 metadata_test <- metadata[-trainIdx, ]
 
-counts_train <- counts[trainIdx, ] # 786 obs
-counts_test <- counts[-trainIdx, ] # 88 obs
+counts_train <- counts[trainIdx, ] # 643 obs
+counts_test <- counts[-trainIdx, ] # 72 obs
 
 # Save partitions
 saveRDS(metadata_train, file.path(outputdir, "metadata_train.rds"))

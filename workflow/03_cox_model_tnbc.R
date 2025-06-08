@@ -32,7 +32,7 @@ cvrts <- c("BiopsyType", "Age..5.year.range..e.g...35.31.35...40.36.40...45.41.4
 colnames(counts_train) <- gsub("\\..*", "", colnames(counts_train))
 train <- counts_train[, fcbf_sign$ENSEMBL]
 colnames(train) <- fcbf_sign$SYMBOL
-train <- scale(train, scale = FALSE) # Centra los datos.Los ajusta para que cada columna tenga media cero al restar la media de cada columna de sus valores.
+train <- scale(train, scale = TRUE) # Centra los datos.Los ajusta para que cada columna tenga media cero al restar la media de cada columna de sus valores.
 # No los normaliza.
 
 # train <- cbind.data.frame(
@@ -61,7 +61,7 @@ cox_sign <- coxph(Surv(OS_days, OS_event) ~ ., data = train %>% dplyr::select(-a
 colnames(counts_test) <- gsub("\\..*", "", colnames(counts_test))
 test <- counts_test[, fcbf_sign$ENSEMBL]
 colnames(test) <- fcbf_sign$SYMBOL
-test <- scale(test, scale = FALSE)
+test <- scale(test, scale = TRUE)
 
 test <- cbind.data.frame(
   metadata_test[, c(surv_vars, cvrts)],
@@ -77,20 +77,28 @@ pred_train_all <- survival::concordance(Surv(OS_days, OS_event) ~ predict(cox_al
 pred_train_cvrts <- survival::concordance(Surv(OS_days, OS_event) ~ predict(cox_cvrts, train[, c(surv_vars, cvrts)]), train)
 pred_train_sign<- survival::concordance(Surv(OS_days, OS_event) ~ predict(cox_sign, train[, c(surv_vars, fcbf_sign$SYMBOL)]), train)
 
+#Nota: en este paso tuve un problema: mis objetos pred_train no tenían un componente std.err sino var, por lo que el
+# código que sigue, para crear el C-index, difiere del de yaccs en que en vez de poner
+# pred_train_all$concordance - 1.96 * pred_train_all$std.err
+# Pone:
+# pred_train_all$concordance - 1.96 * sqrt(pred_train_all$var)
+# pero en esencia ambos hacen lo mismo. Es por la actualización del paquete.
+
 cindex_train <- data.frame(
   Study = c("signature + cvrts", "cvrts", "signature"),
   C = c(pred_train_all$concordance, pred_train_cvrts$concordance, pred_train_sign$concordance),
   ci_l = c(
-    pred_train_all$concordance - 1.96 * pred_train_all$std.err,
-    pred_train_cvrts$concordance - 1.96 * pred_train_cvrts$std.err,
-    pred_train_sign$concordance - 1.96 * pred_train_sign$std.err),
+    pred_train_all$concordance - 1.96 * sqrt(pred_train_all$var),
+    pred_train_cvrts$concordance - 1.96 * sqrt(pred_train_cvrts$var),
+    pred_train_sign$concordance - 1.96 * sqrt(pred_train_sign$var)
+  ),  
   ci_u = c(
-    pred_train_all$concordance + 1.96 * pred_train_all$std.err,
-    pred_train_cvrts$concordance + 1.96 * pred_train_cvrts$std.err,
-    pred_train_sign$concordance + 1.96 * pred_train_sign$std.err),
+    pred_train_all$concordance + 1.96 * sqrt(pred_train_all$var),
+    pred_train_cvrts$concordance + 1.96 * sqrt(pred_train_cvrts$var),
+    pred_train_sign$concordance + 1.96 * sqrt(pred_train_sign$var)
+  ),
   Subset = "Train"
 )
-
 
 # Testing (SCAN-B test) ----------------
 # Three scenarios:
@@ -106,26 +114,28 @@ cindex_test <- data.frame(
   Study = c("signature + cvrts", "cvrts", "signature"),
   C = c(pred_test_all$concordance, pred_test_cvrts$concordance, pred_test_sign$concordance),
   ci_l = c(
-    pred_test_all$concordance - 1.96 * pred_test_all$std.err,
-    pred_test_cvrts$concordance - 1.96 * pred_test_cvrts$std.err,
-    pred_test_sign$concordance - 1.96 * pred_test_sign$std.err),
+    pred_test_all$concordance - 1.96 * sqrt(pred_test_all$var),
+    pred_test_cvrts$concordance - 1.96 * sqrt(pred_test_cvrts$var),
+    pred_test_sign$concordance - 1.96 * sqrt(pred_test_sign$var)
+  ),  
   ci_u = c(
-    pred_test_all$concordance + 1.96 * pred_test_all$std.err,
-    pred_test_cvrts$concordance + 1.96 * pred_test_cvrts$std.err,
-    pred_test_sign$concordance + 1.96 * pred_test_sign$std.err),
+    pred_test_all$concordance + 1.96 * sqrt(pred_test_all$var),
+    pred_test_cvrts$concordance + 1.96 * sqrt(pred_test_cvrts$var),
+    pred_test_sign$concordance + 1.96 * sqrt(pred_test_sign$var)
+  ), 
   Subset = "Test"
 )
 
-# Results of C-Index in TCGA (train and test)
+# Results of C-Index (train and test)
 cindex_scanb_fcbf <- rbind.data.frame(cindex_train, cindex_test)
 
 
 # Save model
-saveRDS(train, file = file.path(outputdir, "train_all.rds"))
-saveRDS(test, file = file.path(outputdir, "test_all.rds"))
+saveRDS(train, file = file.path(outputdir, "f_train_all.rds"))
+saveRDS(test, file = file.path(outputdir, "f_test_all.rds"))
 
-saveRDS(cox_all, file = file.path(outputdir, "cox_cvrts_yaccs.rds"))
-saveRDS(cox_cvrts, file = file.path(outputdir, "cox_cvrts.rds"))
-saveRDS(cox_yaccs, file = file.path(outputdir, "cox_yaccs.rds"))
+saveRDS(cox_all, file = file.path(outputdir, "f_cox_cvrts_sign.rds"))
+saveRDS(cox_cvrts, file = file.path(outputdir, "f_cox_cvrts.rds"))
+saveRDS(cox_sign, file = file.path(outputdir, "f_cox_sign.rds"))
 
-saveRDS(cindex_tcga, file = file.path(outputdir, "cindex_tcga.rds"))
+saveRDS(cindex_scanb_fcbf, file = file.path(outputdir, "f_cindex_scanb_fcbf.rds"))

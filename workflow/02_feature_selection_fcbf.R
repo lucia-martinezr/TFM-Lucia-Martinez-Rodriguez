@@ -51,8 +51,8 @@ selected_features <- fcbf(
   balance_classes = FALSE
 )
 
-# Con minimum_su 0.25 no encuentra nada.
-# Con 0.0025, que es el threshold que pone Jose, me encuentra 17 características.
+# Con minimum_su 0.25 o 0.025 no encuentra nada.
+# Con 0.0025, que es el threshold que pone Jose, me encuentra 18 características.
 
 # Retrieve Ensembl IDs
 rn<-gene_names[selected_features$index]

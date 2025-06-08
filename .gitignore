@@ -1,5 +1,6 @@
 # Ignorar datos crudos grandes
 data/ext_data/scanb_tnbc.tsv
+data/corradjust_clean_data/df_data_complete_clean.csv
 
 # Ignorar otros archivos o carpetas si es necesario
 # مثلا:

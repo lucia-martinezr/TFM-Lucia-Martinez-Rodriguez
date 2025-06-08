@@ -85,8 +85,6 @@ length(protein_coding_gene_ids_from_dict), "\n")
   # Identifico qué genes del df de expresión están en la lista de protein coding del diccionario
 scanb_ids_that_are_protein_coding_no_version <- intersect(scanb_gene_ids_no_version, protein_coding_gene_ids_from_dict)
 
-  # Guardo los IDs de los genes "protein_coding" según el diccionario
-protein_coding_gene_ids <- protein_coding_genes$ensembl_gene_id
 cat("Número de tus genes (sin versión) que son 'protein_coding' y están en el diccionario:", 
     length(scanb_ids_that_are_protein_coding_no_version), "\n")
 
@@ -100,14 +98,6 @@ ids_not_kept_no_version <- setdiff(scanb_gene_ids_no_version, scanb_ids_that_are
 cat("Número de tus genes (sin versión) que NO se mantendrán (no son protein_coding o no están en el dict como tal):", 
     length(ids_not_kept_no_version), "\n")
 
-  # Cálculo de cuántos genes se eliminan
-num_genes_initial <- ncol(filtered_scanb_tnbc)
-num_genes_final <- length(final_columns_to_keep_with_version)
-num_genes_removed <- num_genes_initial - num_genes_final
-
-cat("Número total de columnas de genes iniciales:", num_genes_initial, "\n")
-cat("Número total de columnas de genes 'protein_coding' a mantener:", num_genes_final, "\n")
-cat("Número total de columnas de genes eliminadas:", num_genes_removed, "\n")
 
  # Filtrar el dataset para conservar solo los protein coding
 if (length(final_columns_to_keep_with_version) > 0) {
