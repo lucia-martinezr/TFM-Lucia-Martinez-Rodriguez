@@ -26,19 +26,14 @@ fcbf_sign$SYMBOL <- make.names(fcbf_sign$SYMBOL)
 
 # Arguments  
 surv_vars <- c("OS_days", "OS_event")
-cvrts <- c("BiopsyType", "Age..5.year.range..e.g...35.31.35...40.36.40...45.41.45..etc..") # Importante: quito NCN.PAM50 porque me da problemas
+cvrts <- c("Age..5.year.range..e.g...35.31.35...40.36.40...45.41.45..etc..") 
+
 
 # Prepare train data
 colnames(counts_train) <- gsub("\\..*", "", colnames(counts_train))
 train <- counts_train[, fcbf_sign$ENSEMBL]
 colnames(train) <- fcbf_sign$SYMBOL
-train <- scale(train, scale = TRUE) # Centra los datos.Los ajusta para que cada columna tenga media cero al restar la media de cada columna de sus valores.
-# No los normaliza.
-
-# train <- cbind.data.frame(
-#   metadata_train[,surv_vars],
-#   train
-# )
+train <- scale(train, scale = TRUE)
 
 train <- cbind.data.frame(
   metadata_train[, c(surv_vars, cvrts)],
@@ -99,6 +94,49 @@ cindex_train <- data.frame(
   ),
   Subset = "Train"
 )
+
+#--- Hazard Ratios ---
+
+# Creo una función para extraer HR, IC y p-valores de un modelo de Cox
+extract_hr_table <- function(cox_model) {
+  # Extraer el resumen del modelo
+  summary_model <- summary(cox_model)
+
+  # Extraer los coeficientes y sus exponenciales (HR)
+  coefs <- summary_model$coefficients
+
+  # Extraer los intervalos de confianza
+  conf_ints <- summary_model$conf.int
+
+  # Crear la tabla de resultados
+  hr_table <- data.frame(
+    Variable = rownames(coefs),
+    Coefficient = coefs[, "coef"],
+    Hazard_Ratio = coefs[, "exp(coef)"],
+    CI_Lower = conf_ints[, "lower .95"],
+    CI_Upper = conf_ints[, "upper .95"],
+    P_Value = coefs[, "Pr(>|z|)"]
+  )
+
+  # Redondear para que se entienda mejor
+  hr_table[, -1] <- round(hr_table[, -1], 4)
+
+  # Ordenar por p-valor para ver las variables más significativas primero
+  hr_table <- hr_table[order(hr_table$P_Value), ]
+
+  rownames(hr_table) <- NULL
+  return(hr_table)
+}
+
+# Uso la función para extraer los HR de cada uno de los modelos
+hr_table_all <- extract_hr_table(cox_all)
+hr_table_cvrts <- extract_hr_table(cox_cvrts)
+hr_table_sign <- extract_hr_table(cox_sign)
+
+# Guardo la tablas
+write.table(hr_table_all, file = file.path(outputdir, "f_hr_table_all.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(hr_table_cvrts, file = file.path(outputdir, "f_hr_table_cvrts.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(hr_table_sign, file = file.path(outputdir, "f_hr_table_sign.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Testing (SCAN-B test) ----------------
 # Three scenarios:

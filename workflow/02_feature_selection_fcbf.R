@@ -1,6 +1,4 @@
 # Feature selection with FCBF
-# source("R/utils.R") Dónde está este archivo.
-# source("requirements.R")
 
 # devtools::install_github("lubianat/FCBF")
 # BiocManager::install("AnnotationDbi")
@@ -52,7 +50,7 @@ selected_features <- fcbf(
 )
 
 # Con minimum_su 0.25 o 0.025 no encuentra nada.
-# Con 0.0025, que es el threshold que pone Jose, me encuentra 18 características.
+# Con 0.0025, que es el threshold de YACCS, me encuentra 57 características.
 
 # Retrieve Ensembl IDs
 rn<-gene_names[selected_features$index]

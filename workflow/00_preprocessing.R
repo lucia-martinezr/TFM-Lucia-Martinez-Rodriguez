@@ -79,23 +79,15 @@ protein_coding_gene_ids_from_dict <- gene_annotations %>%
   dplyr::pull(ensembl_gene_id) %>% # Extrae solo la columna ensembl_gene_id
   unique() # Asegurar que sean únicos, aunque biomaRt suele darlos únicos
 
-cat("Número de IDs 'protein_coding' únicos en el diccionario:", 
-length(protein_coding_gene_ids_from_dict), "\n")
-
   # Identifico qué genes del df de expresión están en la lista de protein coding del diccionario
 scanb_ids_that_are_protein_coding_no_version <- intersect(scanb_gene_ids_no_version, protein_coding_gene_ids_from_dict)
-
-cat("Número de tus genes (sin versión) que son 'protein_coding' y están en el diccionario:", 
-    length(scanb_ids_that_are_protein_coding_no_version), "\n")
 
   # Mapeo los genes protein coding en el df de expresión
 final_columns_to_keep_with_version <- original_scanb_colnames_with_version[scanb_gene_ids_no_version %in% scanb_ids_that_are_protein_coding_no_version]
 
-cat("Número de columnas finales a mantener (con versión):", length(final_columns_to_keep_with_version), "\n")
-
   # ¿Cuántos genes no son protein coding o no tienen equivalencia en el diccionario?
 ids_not_kept_no_version <- setdiff(scanb_gene_ids_no_version, scanb_ids_that_are_protein_coding_no_version)
-cat("Número de tus genes (sin versión) que NO se mantendrán (no son protein_coding o no están en el dict como tal):", 
+cat("Número de genes (sin versión) que NO se mantendrán (no son protein_coding o no están en el dict como tal):",
     length(ids_not_kept_no_version), "\n")
 
 
@@ -109,11 +101,6 @@ if (length(final_columns_to_keep_with_version) > 0) {
   filtered_scanb_tnbc_protein_coding <- filtered_scanb_tnbc[, FALSE] # 0 columnas
 }
 filtered_scanb_tnbc <- filtered_scanb_tnbc_protein_coding
-
-# Intersección de los genes con los conjuntos de datos de validación externa.
-
-
-# Variance Stabilizing Transformation (VST)
 
 
 # Guardar los datos.

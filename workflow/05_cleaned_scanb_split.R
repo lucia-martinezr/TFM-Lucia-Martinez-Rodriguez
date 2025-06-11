@@ -1,4 +1,3 @@
-# source("requirements.R") # Carga y ejecuta el script requirements.R
 
 # Inputpaths
 metadata_inputpath <- "C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.rds" #Pregunta: metadata es datos clínicos?
@@ -22,7 +21,7 @@ counts <- counts[ , -1]
 names(metadata) <- make.names(names(metadata))
 
 # Define partitions
-smpSize <- floor(0.9 * nrow(metadata))
+smpSize <- floor(0.8 * nrow(metadata))
 set.seed(55)
 trainIdx <- sample(seq_len(nrow(metadata)), size = smpSize)
 
@@ -30,8 +29,8 @@ trainIdx <- sample(seq_len(nrow(metadata)), size = smpSize)
 metadata_train <- metadata[trainIdx, ]
 metadata_test <- metadata[-trainIdx, ]
 
-counts_train <- counts[trainIdx, ] # 643 obs 
-counts_test <- counts[-trainIdx, ] # 72 obs
+counts_train <- counts[trainIdx, ] # 572 obs 
+counts_test <- counts[-trainIdx, ] # 143 obs
 
 # Save partitions
 saveRDS(metadata_train, file.path(outputdir, "clean_metadata_train.rds"))
