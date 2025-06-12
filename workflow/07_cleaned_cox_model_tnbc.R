@@ -119,10 +119,10 @@ clean_hr_table_all <- extract_hr_table(cox_all)
 clean_hr_table_cvrts <- extract_hr_table(cox_cvrts)
 clean_hr_table_sign <- extract_hr_table(cox_sign)
 
-# Guardo la tablas
-write.table(clean_hr_table_all, file = file.path(outputdir, "c_hr_table_all.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
-write.table(clean_hr_table_cvrts, file = file.path(outputdir, "c_hr_table_cvrts.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
-write.table(clean_hr_table_sign, file = file.path(outputdir, "c_hr_table_sign.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+# # Guardo la tablas
+# write.table(clean_hr_table_all, file = file.path(outputdir, "c_hr_table_all.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+# write.table(clean_hr_table_cvrts, file = file.path(outputdir, "c_hr_table_cvrts.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+# write.table(clean_hr_table_sign, file = file.path(outputdir, "c_hr_table_sign.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Testing (SCAN-B test) ----------------
 # Three scenarios:
@@ -154,12 +154,12 @@ cindex_test <- data.frame(
 cindex_scanb_corr <- rbind.data.frame(cindex_train, cindex_test)
 
 
-# Save model
-saveRDS(train, file = file.path(outputdir, "c_train_all.rds"))
-saveRDS(test, file = file.path(outputdir, "c_test_all.rds"))
-
-saveRDS(cox_all, file = file.path(outputdir, "c_cox_cvrts_sign.rds"))
-saveRDS(cox_cvrts, file = file.path(outputdir, "c_cox_cvrts.rds"))
-saveRDS(cox_sign, file = file.path(outputdir, "c_cox_sign.rds"))
-
-saveRDS(cindex_scanb_corr, file = file.path(outputdir, "c_cindex_scanb.rds"))
+# # Save model
+# saveRDS(train, file = file.path(outputdir, "c_train_all.rds"))
+# saveRDS(test, file = file.path(outputdir, "c_test_all.rds"))
+# 
+# saveRDS(cox_all, file = file.path(outputdir, "c_cox_cvrts_sign.rds"))
+# saveRDS(cox_cvrts, file = file.path(outputdir, "c_cox_cvrts.rds"))
+# saveRDS(cox_sign, file = file.path(outputdir, "c_cox_sign.rds"))
+# 
+# saveRDS(cindex_scanb_corr, file = file.path(outputdir, "c_cindex_scanb.rds"))

@@ -133,10 +133,10 @@ hr_table_all <- extract_hr_table(cox_all)
 hr_table_cvrts <- extract_hr_table(cox_cvrts)
 hr_table_sign <- extract_hr_table(cox_sign)
 
-# Guardo la tablas
-write.table(hr_table_all, file = file.path(outputdir, "f_hr_table_all.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
-write.table(hr_table_cvrts, file = file.path(outputdir, "f_hr_table_cvrts.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
-write.table(hr_table_sign, file = file.path(outputdir, "f_hr_table_sign.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+# # Guardo la tablas
+# write.table(hr_table_all, file = file.path(outputdir, "f_hr_table_all.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+# write.table(hr_table_cvrts, file = file.path(outputdir, "f_hr_table_cvrts.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
+# write.table(hr_table_sign, file = file.path(outputdir, "f_hr_table_sign.tsv"),  sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Testing (SCAN-B test) ----------------
 # Three scenarios:
@@ -168,12 +168,12 @@ cindex_test <- data.frame(
 cindex_scanb_fcbf <- rbind.data.frame(cindex_train, cindex_test)
 
 
-# Save model
-saveRDS(train, file = file.path(outputdir, "f_train_all.rds"))
-saveRDS(test, file = file.path(outputdir, "f_test_all.rds"))
-
-saveRDS(cox_all, file = file.path(outputdir, "f_cox_cvrts_sign.rds"))
-saveRDS(cox_cvrts, file = file.path(outputdir, "f_cox_cvrts.rds"))
-saveRDS(cox_sign, file = file.path(outputdir, "f_cox_sign.rds"))
-
-saveRDS(cindex_scanb_fcbf, file = file.path(outputdir, "f_cindex_scanb_fcbf.rds"))
+# # Save model
+# saveRDS(train, file = file.path(outputdir, "f_train_all.rds"))
+# saveRDS(test, file = file.path(outputdir, "f_test_all.rds"))
+# 
+# saveRDS(cox_all, file = file.path(outputdir, "f_cox_cvrts_sign.rds"))
+# saveRDS(cox_cvrts, file = file.path(outputdir, "f_cox_cvrts.rds"))
+# saveRDS(cox_sign, file = file.path(outputdir, "f_cox_sign.rds"))
+# 
+# saveRDS(cindex_scanb_fcbf, file = file.path(outputdir, "f_cindex_scanb_fcbf.rds"))

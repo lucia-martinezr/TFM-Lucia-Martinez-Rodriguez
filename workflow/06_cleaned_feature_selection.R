@@ -19,5 +19,5 @@ print(top_49_genes)
 
 clean_signature <- data.frame(SYMBOL = top_49_genes)
 
-# Store signature
-saveRDS(clean_signature, file.path(outputpath, "clean_signature.rds"))
+# # Store signature
+# saveRDS(clean_signature, file.path(outputpath, "clean_signature.rds"))

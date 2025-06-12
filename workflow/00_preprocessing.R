@@ -103,21 +103,21 @@ if (length(final_columns_to_keep_with_version) > 0) {
 filtered_scanb_tnbc <- filtered_scanb_tnbc_protein_coding
 
 
-# Guardar los datos.
-saveRDS(filtered_scanb_tnbc, 'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/scanb_tnbc.rds')
-saveRDS(filtered_clin_tnbc, 'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.rds')
-
-write.table(filtered_scanb_tnbc, 
-            'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/scanb_tnbc.tsv', 
-            sep = '\t',      
-            row.names = TRUE,
-            col.names = NA)
-
-write.table(filtered_clin_tnbc, 
-            'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.tsv', 
-            sep = '\t',      
-            row.names = TRUE,
-            col.names = NA)
+# # Guardar los datos.
+# saveRDS(filtered_scanb_tnbc, 'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/scanb_tnbc.rds')
+# saveRDS(filtered_clin_tnbc, 'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.rds')
+# 
+# write.table(filtered_scanb_tnbc, 
+#             'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/scanb_tnbc.tsv', 
+#             sep = '\t',      
+#             row.names = TRUE,
+#             col.names = NA)
+# 
+# write.table(filtered_clin_tnbc, 
+#             'C:/Users/lulim/OneDrive/Documentos/GitHub/TFM-Lucia-Martinez-Rodriguez/data/ext_data/clin_tnbc.tsv', 
+#             sep = '\t',      
+#             row.names = TRUE,
+#             col.names = NA)
 
 
 # Prueba de normalidad para 5 genes al azar

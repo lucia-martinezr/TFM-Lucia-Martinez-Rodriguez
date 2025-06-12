@@ -69,5 +69,5 @@ signature <- AnnotationDbi::select(
   multiVals = "first"
 )
 
-# Store signature
-saveRDS(signature, file = file.path(outputpath))
+# # Store signature
+# saveRDS(signature, file = file.path(outputpath))

@@ -21,7 +21,7 @@ hr_corradjust_all <- read.table(corradjust_hr_path, header = TRUE, sep = "\t", s
 
 # Preparo los datos para el gráfico
 fcbf_plot_data <- hr_fcbf_all %>%
-  mutate(Variable = ifelse(grepl("Age..5.year.range", Variable, fixed = TRUE), "Age", Variable)) %>% # Acorto el nombre de la variable Age
+  mutate(Variable = ifelse(grepl("Age..5.year.range", Variable, fixed = TRUE), "Edad", Variable)) %>% # Acorto el nombre de la variable Age
   arrange(Hazard_Ratio) %>% # Ordeno por Hazard Ratio
   mutate(
     labeltext = Variable,
@@ -61,7 +61,7 @@ dev.off()
 
 # Preparo los datos para el gráfico
 corradjust_plot_data <- hr_corradjust_all %>%
-  mutate(Variable = ifelse(grepl("Age..5.year.range", Variable, fixed = TRUE), "Age", Variable)) %>%
+  mutate(Variable = ifelse(grepl("Age..5.year.range", Variable, fixed = TRUE), "Edad", Variable)) %>%
   arrange(Hazard_Ratio) %>%
   mutate(
     labeltext = Variable,
