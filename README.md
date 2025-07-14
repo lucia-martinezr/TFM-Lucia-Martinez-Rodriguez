@@ -3,8 +3,8 @@ Este es el repositorio del TFM "Aplicación de FCBF y CorrAdjust para la búsque
 
 En los archivos de este repositorio pueden encontrarse:
 
-- data: datos de expresión SCAN-B utilizados.
+- data: datos de salida del análisis.
 - workflow: scripts.
-- plots: gráficos construidos.
+- figures: gráficos construidos.
 
 
