@@ -1,5 +1,10 @@
 # TFM-Lucia-Martinez-Rodriguez
-This is a repository for the development of my Master Thesis at UNIR. This MT will be tutorized by Alberto Alexander Robles Loaiza (UNIR) and Carlos Fernández Lozano (UDC).
+Este es el repositorio del TFM "Aplicación de FCBF y CorrAdjust para la búsqueda de una firma transcriptómica en cáncer de mama triple negativo"
 
-## Archivos
+En los archivos de este repositorio pueden encontrarse:
+
+- data: datos de salida del análisis.
+- workflow: scripts.
+- figures: gráficos construidos.
+
 
